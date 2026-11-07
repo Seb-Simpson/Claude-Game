@@ -230,3 +230,8 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--lantern); o
   .screen { transition: opacity 0.3s; }
 }
 body.reduced .logo, body.reduced .tagline, body.reduced .title-menu, body.reduced .summit-card { animation: none !important; opacity: 1; }
+.screen.summit-screen { justify-content: flex-end; padding-bottom: calc(var(--u) * 26); }
+.summit-screen .card { padding: calc(var(--u) * 14) calc(var(--u) * 26); background: rgba(14, 18, 48, 0.42); }
+.summit-screen .card .big { font-size: 2.6em; }
+.summit-screen .card .stat-grid { grid-template-columns: repeat(6, 1fr); margin: 0.6em 0 0.8em; }
+.summit-screen .epilogue { margin-top: 0.2em; }

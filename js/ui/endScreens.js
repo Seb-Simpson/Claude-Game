@@ -23,7 +23,7 @@ export function endScreen(app, summary, best) {
   const title = summit ? 'Summit' : summary.outcome === 'retreat' ? 'Retreat' : 'The fall';
   const eyebrow = summit ? summary.peakName : summary.outcome === 'retreat' ? 'You came down alive' : summary.peakName;
   const isBest = summary.altitude >= best && best > 0;
-  const node = el('div', { class: 'screen' + (summit ? '' : ' dim'), role: 'dialog', 'aria-label': title },
+  const node = el('div', { class: 'screen' + (summit ? ' summit-screen' : ' dim'), role: 'dialog', 'aria-label': title },
     el('div', { class: 'panel card' + (summit ? ' summit-card' : '') },
       el('div', { class: 'eyebrow' }, eyebrow),
       el('h2', { style: 'margin:.1em 0 .1em' }, title),

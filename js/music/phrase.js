@@ -16,7 +16,7 @@ export function generatePhrase(rng, opts = {}) {
   const durs = density > 0.6 ? [[0.5, 2], [1, 4], [1.5, 2], [2, 2]] : [[1, 3], [1.5, 2], [2, 3], [3, 2], [4, 1]];
   while (beats < maxBeats - 0.5) {
     if (notes.length && rng.chance(0.28 * (1 - density))) {
-      const r = rng.pick([1, 1.5, 2]);
+      const r = Math.min(rng.pick([1, 1.5, 2]), maxBeats - beats);
       notes.push({ deg: null, dur: r, vel: 0 });
       beats += r;
       continue;
@@ -36,7 +36,10 @@ export function generatePhrase(rng, opts = {}) {
     let best = d, bd = 99;
     for (let o = -14; o <= 14; o += 7) for (const t of tones) { const c = t + o; if (Math.abs(c - d) < bd) { bd = Math.abs(c - d); best = c; } }
     notes[i].deg = best;
-    notes[i].dur = Math.max(notes[i].dur, 2);
+    // let the resolution ring: lengthen it into any slack left in the bar
+    const slack = maxBeats - beats;
+    if (slack > 0) notes[i].dur += Math.min(slack, 2);
+    notes.length = i + 1;
     break;
   }
   return notes;

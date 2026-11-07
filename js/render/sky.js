@@ -37,29 +37,40 @@ export class Sky {
     }
     return c;
   }
+  ribbonStrip(col) {
+    const c = document.createElement('canvas');
+    c.width = 1; c.height = 64;
+    const g = c.getContext('2d');
+    const grd = g.createLinearGradient(0, 0, 0, 64);
+    grd.addColorStop(0, `rgba(${col},0)`);
+    grd.addColorStop(0.75, `rgba(${col},0.6)`);
+    grd.addColorStop(1, `rgba(${col},1)`);
+    g.fillStyle = grd;
+    g.fillRect(0, 0, 1, 64);
+    return c;
+  }
   drawAurora(t, amount) {
-    const g = this.aurCtx, W = 160, H = 90;
-    g.clearRect(0, 0, W, H);
+    const g = this.aurCtx, W = 160;
+    if (!this.ribbons) {
+      this.ribbons = [
+        { y: 22, amp: 9, f: 0.045, sp: 0.07, h: 30, strip: this.ribbonStrip('95,255,200') },
+        { y: 34, amp: 12, f: 0.03, sp: -0.05, h: 26, strip: this.ribbonStrip('140,120,255') },
+        { y: 16, amp: 6, f: 0.07, sp: 0.11, h: 18, strip: this.ribbonStrip('120,230,255') },
+      ];
+    }
+    g.clearRect(0, 0, W, 90);
     g.globalCompositeOperation = 'lighter';
-    const ribbons = [
-      { y: 22, amp: 9, f: 0.045, sp: 0.07, col: [95, 255, 200], h: 30 },
-      { y: 34, amp: 12, f: 0.03, sp: -0.05, col: [140, 120, 255], h: 26 },
-      { y: 16, amp: 6, f: 0.07, sp: 0.11, col: [120, 230, 255], h: 18 },
-    ];
-    for (const r of ribbons) {
+    for (const r of this.ribbons) {
       for (let x = 0; x < W; x++) {
         const yy = r.y + Math.sin(x * r.f + t * r.sp * 6) * r.amp + Math.sin(x * r.f * 2.7 - t * 0.3) * r.amp * 0.4;
         const bright = 0.5 + 0.5 * Math.sin(x * 0.21 + t * 0.9 + r.y) * Math.sin(x * 0.053 - t * 0.4);
         const a = Math.max(0, bright) * 0.5 * amount;
         if (a < 0.02) continue;
-        const grd = g.createLinearGradient(0, yy - r.h, 0, yy + 3);
-        grd.addColorStop(0, `rgba(${r.col[0]},${r.col[1]},${r.col[2]},0)`);
-        grd.addColorStop(0.75, `rgba(${r.col[0]},${r.col[1]},${r.col[2]},${a * 0.6})`);
-        grd.addColorStop(1, `rgba(${r.col[0]},${r.col[1]},${r.col[2]},${a})`);
-        g.fillStyle = grd;
-        g.fillRect(x, yy - r.h, 1, r.h + 3);
+        g.globalAlpha = Math.min(1, a);
+        g.drawImage(r.strip, x, yy - r.h, 1, r.h + 3);
       }
     }
+    g.globalAlpha = 1;
     g.globalCompositeOperation = 'source-over';
   }
   /** horizonY: screen y of the visual horizon; lift: 0..1 altitude progress. */

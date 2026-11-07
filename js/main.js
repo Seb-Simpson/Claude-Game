@@ -10,7 +10,7 @@ import { Score } from './music/score.js';
 import { Ambience } from './music/ambience.js';
 import { Sfx } from './music/sfx.js';
 import { playStinger } from './music/stingers.js';
-import { generateTerrain } from './game/terrain.js';
+import { generateTerrain, wallEdgesAt } from './game/terrain.js';
 import { PEAKS, getPeak, dailyPeak } from './game/peaks.js';
 import { Climb } from './game/climb.js';
 import { FALL_SAFE } from './game/constants.js';
@@ -403,7 +403,9 @@ class App {
     const rm = this.settings.reducedMotion;
     cam.y += dt * (rm ? 3 : 9);
     if (cam.y > this.worldTerrain.height - 300) cam.y = 600;
-    cam.x = Math.sin(this.time * 0.05) * 40;
+    // keep the wall to the left third so the range and the sky carry the frame
+    const [, right] = wallEdgesAt(this.worldTerrain.wall, cam.y);
+    cam.x = approach(cam.x, right + 150 + Math.sin(this.time * 0.05) * 30, 0.5, dt);
     cam.zoom = approach(cam.zoom, 1.05, 0.5, dt);
     cam.tilt = rm ? 0 : Math.sin(this.time * 0.11) * 0.004;
     this.titleHour += dt * 0.012;

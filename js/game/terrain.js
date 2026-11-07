@@ -220,11 +220,14 @@ function buildWall(holds, ledges, features, top, centerAt, halfAt) {
   const sc = summitL ? (summitL.x1 + summitL.x2) / 2 : 0;
   for (let i = 0; i < n; i++) {
     const y = y0 + i * WALL_SAMPLE;
-    if (y > top - 40) {
-      const k = clamp((y - (top - 40)) / 140, 0, 1);
-      const kk = k * k;
-      left[i] = left[i] + (sc - 4 - left[i]) * kk;
-      right[i] = right[i] + (sc + 4 - right[i]) * kk;
+    if (y > top - 160) {
+      // round off into a summit dome that ends just above the summit ledge
+      const k = clamp((y - (top - 160)) / 190, 0, 1);
+      const kk = Math.pow(k, 1.6);
+      const hw = summitL ? (summitL.x2 - summitL.x1) / 2 + 20 : 120;
+      const l2 = Math.min(left[i], sc - hw), r2 = Math.max(right[i], sc + hw);
+      left[i] = l2 + (sc - 2 - l2) * kk;
+      right[i] = r2 + (sc + 2 - r2) * kk;
     }
   }
   for (let pass = 0; pass < 2; pass++) {
@@ -233,7 +236,7 @@ function buildWall(holds, ledges, features, top, centerAt, halfAt) {
       right[i] = Math.max(right[i], (right[i - 1] + right[i] * 2 + right[i + 1]) / 4);
     }
   }
-  return { y0, step: WALL_SAMPLE, left, right, top: top + 100 };
+  return { y0, step: WALL_SAMPLE, left, right, top: top + 40 };
 }
 
 export function wallEdgesAt(wall, y) {
