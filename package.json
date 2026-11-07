@@ -1,0 +1,12 @@
+{
+  "name": "snowline",
+  "version": "1.0.0",
+  "description": "A 2.5D procedural mountain-climbing game. Canvas 2D and Web Audio, no build step.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "serve": "python3 -m http.server 8080"
+  },
+  "license": "MIT"
+}
