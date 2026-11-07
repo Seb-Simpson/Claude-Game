@@ -385,8 +385,8 @@ class App {
     if (e && e.cine) {
       e.t += dt;
       const sum = c.terrain.ledges.find((l) => l.id === c.terrain.summitId);
-      cam.follow((sum.x1 + sum.x2) / 2 * 0.5, sum.y + 120 + Math.min(e.t, 12) * 6, dt, 0.6);
-      cam.zoom = approach(cam.zoom, 0.95, 0.25, dt);
+      cam.follow((sum.x1 + sum.x2) / 2, sum.y - 100 + Math.min(e.t, 12) * 3, dt, 0.6);
+      cam.zoom = approach(cam.zoom, 1.1, 0.25, dt);
       e.hour = Math.min(7.2, e.hour + dt * 0.16);
       return;
     }

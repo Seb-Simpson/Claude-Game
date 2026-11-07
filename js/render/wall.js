@@ -116,7 +116,9 @@ export class WallRenderer {
     // world (y-up) -> chunk pixels
     g.setTransform(res, 0, 0, -res, -xmin * res, y1 * res);
     const ys = [];
-    for (let y = y0 - 48; y <= y1 + 48; y += 8) ys.push(y);
+    const yTop = Math.min(y1 + 48, T.wall.top - 6);
+    for (let y = y0 - 48; y <= yTop; y += 8) ys.push(y);
+    if (ys[ys.length - 1] < yTop) ys.push(yTop);
     const outline = () => {
       g.beginPath();
       ys.forEach((y, i) => { const [l] = wallEdgesAt(T.wall, y); i ? g.lineTo(l, y) : g.moveTo(l, y); });

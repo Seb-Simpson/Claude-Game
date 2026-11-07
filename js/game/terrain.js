@@ -236,7 +236,7 @@ function buildWall(holds, ledges, features, top, centerAt, halfAt) {
       right[i] = Math.max(right[i], (right[i - 1] + right[i] * 2 + right[i + 1]) / 4);
     }
   }
-  return { y0, step: WALL_SAMPLE, left, right, top: top + 40 };
+  return { y0, step: WALL_SAMPLE, left, right, top: top + 34 };
 }
 
 export function wallEdgesAt(wall, y) {

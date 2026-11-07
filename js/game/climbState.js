@@ -37,7 +37,7 @@ export function canTransition(from, to) {
 /** Journal note for a finished climb. */
 export function epitaph(s) {
   const alt = `${Math.round(s.altitude).toLocaleString('en-US')} m`;
-  if (s.outcome === 'summit') return s.falls === 0 ? `A clean ascent. The ${s.peakName} summit at ${alt}, not a single fall.` : `Summit at ${alt} after ${s.falls} fall${s.falls === 1 ? '' : 's'}. The view was worth every one.`;
+  if (s.outcome === 'summit') return s.falls === 0 ? `A clean ascent: the summit of ${s.peakName} at ${alt}, not a single fall.` : `Summit at ${alt} after ${s.falls} fall${s.falls === 1 ? '' : 's'}. The view was worth every one.`;
   if (s.outcome === 'retreat') {
     const why = { oxygen: 'as the last bottle ran dry', health: 'too hurt to go on', food: 'with nothing left to eat', storm: 'ahead of the storm', choice: 'by choice, with all fingers intact' };
     const key = Object.keys(why).find((k) => (s.cause || '').startsWith(k)) || 'choice';

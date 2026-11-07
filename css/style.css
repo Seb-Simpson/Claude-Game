@@ -243,3 +243,5 @@ body.reduced .logo, body.reduced .tagline, body.reduced .title-menu, body.reduce
 @media (orientation: portrait) and (pointer: coarse) {
   #rotate { display: block; position: fixed; left: 0; right: 0; bottom: 8%; text-align: center; color: #b9c6e6; font: italic 16px Georgia, serif; opacity: 0.8; }
 }
+.summit-screen .card { max-width: calc(var(--u) * 560); font-size: 0.85em; }
+.summit-screen .card .stat-grid span { font-size: 0.7em; letter-spacing: 0.08em; }
