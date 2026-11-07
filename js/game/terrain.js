@@ -18,7 +18,7 @@ export function generateTerrain({ seed, height, camps = 3, profile = {}, lungeSc
   const holds = [], ledges = [], features = [], route = [];
   let nextId = 0;
   const centerAt = (y) => noise.fbm(y / 1100 + 3.1, 3) * 260;
-  const halfAt = (y) => 250 + (noise.fbm(y / 700 + 50, 3) + 0.5) * 170;
+  const halfAt = (y) => 175 + (noise.fbm(y / 700 + 50, 3) + 0.5) * 120;
   const clampX = (x, y, m = 40) => clamp(x, centerAt(y) - halfAt(y) + m, centerAt(y) + halfAt(y) - m);
 
   const addHold = (x, y, type = 'jug', extra) => {
