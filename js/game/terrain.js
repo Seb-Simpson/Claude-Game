@@ -104,9 +104,10 @@ export function generateTerrain({ seed, height, camps = 3, profile = {}, lungeSc
       leaveLedge(l);
       continue;
     }
-    const kind = rng.weighted([
+    const sinceLedge = route.length - 1 - route.map((r) => r.kind).lastIndexOf('ledge');
+    const kind = sinceLedge > 12 ? 'ledge' : rng.weighted([
       ['face', 3], ['traverse', p.traverse * 10], ['chimney', p.chimney * 10], ['overhang', p.overhang * 10],
-      ['ice', p.ice * 10], ['ledge', 1.6], ['lunge', p.lunge * 10 * lungeScale],
+      ['ice', p.ice * 10], ['ledge', 2.3], ['lunge', p.lunge * 10 * lungeScale],
     ]);
     const y1 = cur.y;
     if (kind === 'face') {
