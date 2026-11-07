@@ -15,7 +15,7 @@ export function gradePlane(ctx, w, h, ts, lantern, extraDark) {
   const amb = ctx.createLinearGradient(0, 0, 0, chh);
   amb.addColorStop(0, rgba(ts.mid, 0.14));
   amb.addColorStop(0.55, rgba(ts.hor, 0.08));
-  amb.addColorStop(1, rgba(ts.haze, 0.38));
+  amb.addColorStop(1, rgba(ts.haze, 0.24));
   ctx.fillStyle = amb;
   ctx.fillRect(0, 0, cw, chh);
   // low-angle sun warms the rock at dawn and dusk

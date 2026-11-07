@@ -35,38 +35,41 @@ export class Post {
       g.fillRect(0, 0, W, H);
     };
     edge(0, 0, 90, 0); edge(W, 0, W - 90, 0); edge(0, 0, 0, 70); edge(0, H, 0, H - 70);
-    // dendrites grow inward from the edges
-    g.strokeStyle = 'rgba(240,248,255,0.7)';
-    const branch = (x, y, a, len, depth) => {
-      if (depth <= 0 || len < 3) return;
-      const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
-      g.lineWidth = depth * 0.35;
-      g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
-      const n = 2 + (rng.next() < 0.4 ? 1 : 0);
-      for (let i = 0; i < n; i++) {
-        const t = rng.range(0.3, 1);
-        branch(x + (x2 - x) * t, y + (y2 - y) * t, a + (rng.next() < 0.5 ? -1 : 1) * rng.range(0.5, 1.1), len * rng.range(0.35, 0.6), depth - 1);
+    // six-armed crystals, dense at the edges and corners, sparse inward
+    const crystal = (x, y, r, a) => {
+      g.lineWidth = Math.max(0.5, r * 0.06);
+      g.beginPath();
+      for (let k = 0; k < 6; k++) {
+        const ang = a + (k * Math.PI) / 3;
+        const ex = x + Math.cos(ang) * r, ey = y + Math.sin(ang) * r;
+        g.moveTo(x, y); g.lineTo(ex, ey);
+        for (const t of [0.45, 0.7]) {
+          const bx = x + Math.cos(ang) * r * t, by = y + Math.sin(ang) * r * t;
+          const bl = r * (1 - t) * 0.6;
+          g.moveTo(bx, by); g.lineTo(bx + Math.cos(ang + 0.7) * bl, by + Math.sin(ang + 0.7) * bl);
+          g.moveTo(bx, by); g.lineTo(bx + Math.cos(ang - 0.7) * bl, by + Math.sin(ang - 0.7) * bl);
+        }
       }
-      branch(x2, y2, a + rng.range(-0.25, 0.25), len * 0.7, depth - 1);
+      g.stroke();
     };
-    for (let i = 0; i < 46; i++) {
-      const side = i % 4;
-      let x, y, a;
-      if (side === 0) { x = 0; y = rng.next() * H; a = rng.range(-0.6, 0.6); }
-      else if (side === 1) { x = W; y = rng.next() * H; a = Math.PI + rng.range(-0.6, 0.6); }
-      else if (side === 2) { x = rng.next() * W; y = 0; a = Math.PI / 2 + rng.range(-0.6, 0.6); }
-      else { x = rng.next() * W; y = H; a = -Math.PI / 2 + rng.range(-0.6, 0.6); }
-      // corners get more
-      if (rng.next() < 0.5) { x = side % 2 ? W - rng.next() * 120 : rng.next() * 120; y = side < 2 ? rng.next() * H : y; }
-      branch(x, y, a, rng.range(26, 60), 5);
+    for (let i = 0; i < 520; i++) {
+      // distance from the nearest edge, biased hard toward the frame
+      const d = Math.pow(rng.next(), 2.6) * 120;
+      const side = rng.int(0, 3);
+      const along = rng.next();
+      let x = side === 0 ? d : side === 1 ? W - d : along * W;
+      let y = side === 2 ? d : side === 3 ? H - d : along * H;
+      const r = rng.range(2, 9) * (1 - d / 160);
+      g.strokeStyle = `rgba(240,248,255,${(0.25 + rng.next() * 0.45) * (1 - d / 140)})`;
+      crystal(x, y, r, rng.next() * Math.PI);
     }
-    // sparkle
-    for (let i = 0; i < 600; i++) {
-      const edgeBias = rng.next() < 0.5;
-      const x = edgeBias ? (rng.next() < 0.5 ? rng.next() * 110 : W - rng.next() * 110) : rng.next() * W;
-      const y = edgeBias ? rng.next() * H : (rng.next() < 0.5 ? rng.next() * 80 : H - rng.next() * 80);
-      g.fillStyle = `rgba(255,255,255,${rng.range(0.2, 0.7)})`;
-      g.fillRect(x, y, 1, 1);
+    // corner blooms
+    for (const [cx, cy] of [[0, 0], [W, 0], [0, H], [W, H]]) {
+      const grd = g.createRadialGradient(cx, cy, 0, cx, cy, 190);
+      grd.addColorStop(0, 'rgba(230,240,255,0.55)');
+      grd.addColorStop(1, 'rgba(230,240,255,0)');
+      g.fillStyle = grd;
+      g.fillRect(cx - 190, cy - 190, 380, 380);
     }
     return c;
   }

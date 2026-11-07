@@ -83,10 +83,11 @@ export class WeatherFx {
     const sz = [3, 5, 14][band];
     ctx.globalAlpha = alpha * [0.55, 0.85, 0.5][band];
     const streak = sleet > 0.15;
-    if (streak) { ctx.strokeStyle = rgba(tint, 0.5 * alpha); ctx.lineWidth = band === 2 ? 1.6 : 0.8; ctx.beginPath(); }
+    if (streak) { ctx.strokeStyle = rgba(tint, 0.42 * alpha); ctx.lineWidth = band === 2 ? 1.4 : 0.7; ctx.beginPath(); }
     for (const f of this.flakes) {
       if (f.band !== band || f.order > snow) continue;
-      if (streak) {
+      // only part of the precipitation turns to sleet; the rest stays snow
+      if (streak && f.phase < sleet * 4) {
         const k = 0.045 * (1 + band);
         ctx.moveTo(f.x, f.y);
         ctx.lineTo(f.x - f.vx * k, f.y - f.vy * k);

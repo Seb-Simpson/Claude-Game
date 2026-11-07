@@ -109,7 +109,7 @@ export class Player {
       const d = Math.hypot(h.x - fx, h.y - fy);
       if (s === 'stand') {
         const dy = h.y - this.y;
-        if (dy >= 28 && dy <= STAND_REACH && Math.abs(h.x - this.x) <= 44) this.hint.reach.add(h.id);
+        if (dy >= 28 && dy <= STAND_REACH && h.x >= this.ledge.x1 - 40 && h.x <= this.ledge.x2 + 40) this.hint.reach.add(h.id);
         else if (d <= LUNGE && h.y > this.y + 20) this.hint.lunge.add(h.id);
       } else if (d <= REACH) this.hint.reach.add(h.id);
       else if (d <= LUNGE && h.y > fy - 30) this.hint.lunge.add(h.id);

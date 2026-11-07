@@ -139,9 +139,9 @@ export class WallRenderer {
 
     outline();
     const base = g.createLinearGradient(-420, 0, 420, 0);
-    base.addColorStop(0, mixHex(pal.rock, pal.rockLight, 0.25));
-    base.addColorStop(0.5, pal.rock);
-    base.addColorStop(1, mixHex(pal.rock, pal.rockDark, 0.65));
+    base.addColorStop(0, mixHex(pal.rock, pal.rockLight, 0.12));
+    base.addColorStop(0.45, mixHex(pal.rock, pal.rockDark, 0.3));
+    base.addColorStop(1, mixHex(pal.rockDark, pal.rock, 0.15));
     g.fillStyle = base;
     g.fill();
     g.save();
@@ -230,6 +230,26 @@ export class WallRenderer {
       g.fillStyle = grd;
       g.fillRect(x - r, y - r, r * 2, r * 2);
     }
+    // long dark streaks where meltwater runs down the face
+    for (let i = 0; i < 6; i++) {
+      const x = rng.range(xa, xb), y = rng.range(cy0, cy1), len = rng.range(80, 220), w = rng.range(4, 14);
+      const grd = g.createLinearGradient(0, y, 0, y - len);
+      grd.addColorStop(0, rgba('#0a0d22', rng.range(0.1, 0.2)));
+      grd.addColorStop(1, rgba('#0a0d22', 0));
+      g.fillStyle = grd;
+      g.fillRect(x, y - len, w, len);
+    }
+    // snow dusting grows with altitude
+    const alt = Math.max(0, Math.min(1, cy0 / T.height));
+    const dust = Math.round(4 + alt * 22);
+    for (let i = 0; i < dust; i++) {
+      const x = rng.range(xa, xb), y = rng.range(cy0, cy1), w = rng.range(6, 26) * (0.6 + alt);
+      g.fillStyle = rgba(pal.snow, rng.range(0.35, 0.7));
+      g.beginPath();
+      g.moveTo(x, y); g.quadraticCurveTo(x + w / 2, y + rng.range(2, 5), x + w, y);
+      g.quadraticCurveTo(x + w / 2, y - 1.2, x, y);
+      g.fill();
+    }
     // ledgelets: short horizontal breaks with a lit lip and lodged snow
     for (let i = 0; i < 9; i++) {
       const x = rng.range(xa, xb), y = rng.range(cy0, cy1), w = rng.range(14, 50);
@@ -260,18 +280,26 @@ export class WallRenderer {
       if (f.y2 < y0 - 60 || f.y1 > y1 + 60) continue;
       const rng = createRng(T.seed + ':f' + f.y1 + ':' + f.x1);
       if (f.type === 'chimney') {
+        // a recessed slot with tapered ends so it melts into the face
+        const cx = (f.x1 + f.x2) / 2, hw = (f.x2 - f.x1) / 2;
         const grd = g.createLinearGradient(f.x1, 0, f.x2, 0);
-        grd.addColorStop(0, rgba('#0a0d22', 0.0));
-        grd.addColorStop(0.25, rgba('#0a0d22', 0.4));
-        grd.addColorStop(0.5, rgba('#0a0d22', 0.55));
-        grd.addColorStop(0.75, rgba('#0a0d22', 0.4));
+        grd.addColorStop(0, rgba('#0a0d22', 0));
+        grd.addColorStop(0.3, rgba('#0a0d22', 0.38));
+        grd.addColorStop(0.5, rgba('#0a0d22', 0.5));
+        grd.addColorStop(0.7, rgba('#0a0d22', 0.38));
         grd.addColorStop(1, rgba('#0a0d22', 0));
         g.fillStyle = grd;
-        const fade = g.createLinearGradient(0, f.y1 - 30, 0, f.y1 + 30);
-        g.fillRect(f.x1, f.y1, f.x2 - f.x1, f.y2 - f.y1);
-        void fade;
-        g.strokeStyle = rgba(pal.rockLight, 0.4); g.lineWidth = 2;
-        g.beginPath(); g.moveTo(f.x1 + 14, f.y1); g.lineTo(f.x1 + 16, f.y2); g.stroke();
+        g.beginPath();
+        g.moveTo(cx, f.y1 - 20);
+        g.quadraticCurveTo(f.x1, f.y1 + 10, f.x1 + hw * 0.1, f.y1 + 60);
+        g.lineTo(f.x1 + hw * 0.1, f.y2 - 50);
+        g.quadraticCurveTo(f.x1, f.y2 - 10, cx, f.y2 + 30);
+        g.quadraticCurveTo(f.x2, f.y2 - 10, f.x2 - hw * 0.1, f.y2 - 50);
+        g.lineTo(f.x2 - hw * 0.1, f.y1 + 60);
+        g.quadraticCurveTo(f.x2, f.y1 + 10, cx, f.y1 - 20);
+        g.fill();
+        g.strokeStyle = rgba(pal.rockLight, 0.3); g.lineWidth = 1.6;
+        g.beginPath(); g.moveTo(f.x1 + hw * 0.25, f.y1 + 40); g.lineTo(f.x1 + hw * 0.27, f.y2 - 30); g.stroke();
       } else if (f.type === 'overhang') {
         const grd = g.createLinearGradient(0, f.y2, 0, f.y2 - 60);
         grd.addColorStop(0, rgba('#070a1c', 0.42));
@@ -297,25 +325,25 @@ export class WallRenderer {
           g.beginPath(); g.moveTo(x - 1.5, f.y2 - 3); g.lineTo(x + 1.5, f.y2 - 3); g.lineTo(x, f.y2 - 3 - l); g.fill();
         }
       } else if (f.type === 'ice') {
+        // icefall: translucent tongues of ice, each fading out at both ends
         const cx = (f.x1 + f.x2) / 2, hw = (f.x2 - f.x1) / 2;
-        const grd = g.createLinearGradient(f.x1, 0, f.x2, 0);
-        grd.addColorStop(0, rgba(pal.ice, 0));
-        grd.addColorStop(0.3, rgba(pal.ice, 0.22));
-        grd.addColorStop(0.6, rgba('#ffffff', 0.2));
-        grd.addColorStop(1, rgba(pal.ice, 0));
-        g.fillStyle = grd;
-        g.beginPath();
-        g.moveTo(cx - hw * 0.5, f.y1);
-        for (let y = f.y1; y <= f.y2; y += 20) g.lineTo(cx - hw * (0.7 + 0.3 * Math.sin(y * 0.05)), y);
-        g.lineTo(cx, f.y2 + 10);
-        for (let y = f.y2; y >= f.y1; y -= 20) g.lineTo(cx + hw * (0.7 + 0.3 * Math.cos(y * 0.04)), y);
-        g.closePath();
-        g.fill();
-        g.strokeStyle = 'rgba(255,255,255,0.3)';
-        for (let i = 0; i < 7; i++) {
-          const x = cx + rng.range(-hw * 0.6, hw * 0.6);
-          g.lineWidth = rng.range(0.6, 1.4);
-          g.beginPath(); g.moveTo(x, f.y1 + rng.range(0, 20)); g.lineTo(x + rng.range(-4, 4), f.y2 - rng.range(0, 30)); g.stroke();
+        for (let i = 0; i < 9; i++) {
+          const x = cx + rng.range(-hw * 0.75, hw * 0.75), w = rng.range(8, 30);
+          const top = f.y2 + rng.range(-10, 30), bot = f.y1 + rng.range(-20, 30);
+          const grd = g.createLinearGradient(0, bot, 0, top);
+          grd.addColorStop(0, rgba(pal.ice, 0));
+          grd.addColorStop(0.25, rgba(pal.ice, 0.28));
+          grd.addColorStop(0.8, rgba('#ffffff', 0.22));
+          grd.addColorStop(1, rgba(pal.ice, 0));
+          g.fillStyle = grd;
+          g.beginPath();
+          g.moveTo(x, top); g.lineTo(x + w, top);
+          g.quadraticCurveTo(x + w * 1.1, (top + bot) / 2, x + w * 0.6, bot);
+          g.lineTo(x + w * 0.4, bot);
+          g.quadraticCurveTo(x - w * 0.1, (top + bot) / 2, x, top);
+          g.fill();
+          g.fillStyle = rgba('#ffffff', 0.25);
+          g.fillRect(x + w * 0.3, bot + (top - bot) * 0.2, 1, (top - bot) * 0.6);
         }
       }
     }
@@ -404,7 +432,7 @@ export class WallRenderer {
       ctx.stroke();
     }
     if (highlight) {
-      ctx.strokeStyle = highlight === 2 ? 'rgba(255,200,130,0.95)' : highlight === 3 ? 'rgba(200,225,255,0.7)' : 'rgba(255,220,170,0.35)';
+      ctx.strokeStyle = highlight === 2 ? 'rgba(255,200,130,0.95)' : highlight === 3 ? 'rgba(200,225,255,0.38)' : 'rgba(255,220,170,0.32)';
       ctx.lineWidth = highlight === 2 ? 1.6 : 1;
       if (highlight === 3) ctx.setLineDash([3, 3]);
       ctx.beginPath(); ctx.arc(x, y, (highlight === 2 ? 11 : 9) * z, 0, TAU); ctx.stroke();
