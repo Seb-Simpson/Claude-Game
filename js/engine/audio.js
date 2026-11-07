@@ -46,6 +46,10 @@ export class AudioEngine {
     const shelf = c.createBiquadFilter();
     shelf.type = 'highshelf'; shelf.frequency.value = 6000; shelf.gain.value = -2;
     this.master.connect(shelf).connect(comp).connect(c.destination);
+    // tap for level metering (tests, and handy for debugging the mix)
+    this.analyser = c.createAnalyser();
+    this.analyser.fftSize = 2048;
+    comp.connect(this.analyser);
 
     this.reverb = c.createConvolver();
     this.reverb.buffer = this.makeImpulse(4.6, 2.4);
@@ -123,6 +127,16 @@ export class AudioEngine {
     s.loopStart = 0.05;
     s.loopEnd = s.buffer.duration;
     return s;
+  }
+
+  /** Peak and RMS of the master output over the last analyser window. */
+  levels() {
+    if (!this.analyser) return { peak: 0, rms: 0 };
+    const buf = new Float32Array(this.analyser.fftSize);
+    this.analyser.getFloatTimeDomainData(buf);
+    let peak = 0, sum = 0;
+    for (const v of buf) { peak = Math.max(peak, Math.abs(v)); sum += v * v; }
+    return { peak, rms: Math.sqrt(sum / buf.length) };
   }
 
   get now() { return this.ctx ? this.ctx.currentTime : 0; }

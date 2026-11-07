@@ -31,7 +31,7 @@ export class Hud {
     const p = c.player;
     const r = c.resources;
     const safe = s.colorSafe;
-    const target = app.scene === 'climb' && !app.ending ? 1 : 0;
+    const target = app.scene === 'climb' && !app.ending && c.state !== 'camp' ? 1 : 0;
     this.alpha += (target - this.alpha) * Math.min(1, dt * 3);
     if (this.alpha < 0.02) return;
     ctx.save();

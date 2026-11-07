@@ -33,7 +33,7 @@ export function campScreen(app) {
   function render() {
     const r = c.resources, s = camp.supplies;
     supplies.replaceChildren(
-      row('Oxygen', 'oxygen', `${r.oxygen.spares}+${Math.round(r.oxygen.level * 100)}%`, s.oxygen, 'oxygen'),
+      row('Oxygen', 'oxygen', `${Math.round(r.oxygen.level * 100)}%, ${r.oxygen.spares} spare`, s.oxygen, 'oxygen'),
       row('Food', 'food', r.food, s.food, 'food'),
       row('Pitons', 'piton', r.pitons, s.pitons, 'pitons'));
     const p = c.player;
@@ -45,7 +45,7 @@ export function campScreen(app) {
     status.textContent = `${formatAlt(c.altitude)} · ${formatClock(c.hourOfDay)} · Day ${c.day}`;
   }
   render();
-  const node = el('div', { class: 'screen dim', role: 'dialog', 'aria-label': name },
+  const node = el('div', { class: 'screen camp-screen', role: 'dialog', 'aria-label': name },
     el('div', { class: 'panel camp' },
       el('div', { class: 'eyebrow' }, 'A warm, quiet respite'),
       el('h2', {}, name),

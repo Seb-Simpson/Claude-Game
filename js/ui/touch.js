@@ -1,16 +1,16 @@
 /** On-screen touch controls mapped onto input actions. */
 const LAYOUT = [
-  { a: 'up', label: '▲', x: 70, y: 380 },
-  { a: 'left', label: '◀', x: 22, y: 428 },
-  { a: 'right', label: '▶', x: 118, y: 428 },
-  { a: 'down', label: '▼', x: 70, y: 476 },
+  { a: 'up', label: '▲', x: 70, y: 268 },
+  { a: 'left', label: '◀', x: 22, y: 316 },
+  { a: 'right', label: '▶', x: 118, y: 316 },
+  { a: 'down', label: '▼', x: 70, y: 364 },
   { a: 'jump', label: 'Lunge', x: 878, y: 440 },
   { a: 'grip', label: 'Grip', x: 812, y: 470 },
   { a: 'piton', label: 'Piton', x: 846, y: 380, sm: true },
   { a: 'eat', label: 'Eat', x: 790, y: 410, sm: true },
   { a: 'oxygen', label: 'O₂', x: 900, y: 380, sm: true },
-  { a: 'pack', label: 'Pack', x: 846, y: 20, sm: true },
-  { a: 'pause', label: 'II', x: 900, y: 20, sm: true },
+  { a: 'pack', label: 'Pack', x: 700, y: 14, sm: true },
+  { a: 'pause', label: 'II', x: 750, y: 14, sm: true },
 ];
 
 export class TouchControls {

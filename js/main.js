@@ -391,6 +391,13 @@ class App {
       return;
     }
     if (e) { e.t += dt; cam.follow(cam.x, cam.y - 6 * dt * 20, dt, 0.3); return; }
+    if (c.state === 'camp') {
+      // settle in close to the fire, framed off-centre so the panel sits beside it
+      cam.follow(p.x + 110, p.y + 30, dt, 1.5);
+      cam.zoom = approach(cam.zoom, 1.75, 0.8, dt);
+      cam.tilt = 0;
+      return;
+    }
     const falling = p.state === 'fall' || p.state === 'lunge';
     const ty = p.y + 40 + (p.state === 'hang' ? 18 : 0);
     cam.follow(p.x * 0.65, ty, dt, falling ? 7 : 3);
